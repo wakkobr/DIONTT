@@ -10,6 +10,46 @@ from datetime import datetime
 from abc import ABC, abstractmethod
 
 #----------------------------------------
+# CLASSE: Cliente
+#----------------------------------------
+#
+# UML: 1 Cliente - N Contas
+#
+# - endereco: str
+# - contas: lista
+#
+# + realizar_transacao(conta: Conta, transacao: Transacao)
+# + adicionar_conta(conta: Conta)
+#
+
+class Cliente:
+  def __init__(self, endereco):
+    self.endereco = endereco
+    self.contas = []
+
+  def realizar_transacao(self, conta, transacao):
+    transacao.registrar(conta)
+
+  def adicionar_conta(self, conta):
+    self.contas.append(conta)
+
+#
+# CLASS: PessoaFisice
+# Estende: Cliente
+#
+# - cpf: str
+# - nome: str
+# - data_nascimento: date
+#
+
+class PessoaFisica (Cliente):
+  def __init__(self, nome, data_nascimento, cpf, endereco):
+    super().__init__(endereco)
+    self.nome = nome
+    self.data_nascimento = data_nascimento
+    self.cpf = cpf
+
+#----------------------------------------
 # CLASSE: Conta
 #----------------------------------------
 #
@@ -35,6 +75,10 @@ class Conta:
         self._cliente = cliente
         self._historico = Historico()
 
+    @classmethod
+    def nova_conta(cls, cliente, numero):
+        return cls(numero, cliente)
+
     @property
     def saldo(self):
         return self._saldo
@@ -55,10 +99,6 @@ class Conta:
     def historico(self):
         return self._historico
 
-    @classmethod
-    def nova_conta(cls, cliente, numero):
-        return cls(numero, cliente)
-
 #
 # MÉTODO sacar
 #
@@ -70,7 +110,6 @@ class Conta:
 #    bool: T ou F, dependendo do sucesso ou não da operação
 #
 
-    @property
     def sacar(self, valor):
 
       saldo = self.saldo
@@ -134,8 +173,8 @@ class Conta:
 class ContaCorrente (Conta):
   def __init__(self, numero, cliente, limite=500, limite_saques=3):
     super().__init__(numero, cliente)
-    self.limite = limite
-    self.limite_saques = limite_saques
+    self._limite = limite
+    self._limite_saques = limite_saques
 
 # sobrescreve o método SACAR, para fazer validações
   def sacar(self, valor):
@@ -146,8 +185,8 @@ class ContaCorrente (Conta):
         if transacao["tipo"] == "Saque":
             cont_saques += 1
 
-    excedeu_limite = valor > self.limite                  # T or F
-    excedeu_saques = cont_saques >= self.limite_saques    # T or F
+    excedeu_limite = valor > self._limite                  # T or F
+    excedeu_saques = cont_saques >= self._limite_saques    # T or F
 
     if excedeu_limite:
       print("\n==================================================")
@@ -186,7 +225,7 @@ class Historico:
 
 # lista de transacoes
   def __init__(self):
-    self.transacoes = []
+    self._transacoes = []
 
   @property
   def transacoes(self):
@@ -203,51 +242,14 @@ class Historico:
 #
 
   def adicionar_transacao(self, transacao):
-    self._transacoes.append
-    {
-      "tipo": transacao.__class__.__name__,
-      "valor": transacao.valor,
-    }
+    self._transacoes.append(
+        {   
+            "tipo": transacao.__class__.__name__,
+            "valor": transacao.valor,
+        }
+    )
 
-#----------------------------------------
-# CLASSE: Cliente
-#----------------------------------------
-#
-# UML: 1 Cliente - N Contas
-#
-# - endereco: str
-# - contas: lista
-#
-# + realizar_transacao(conta: Conta, transacao: Transacao)
-# + adicionar_conta(conta: Conta)
-#
 
-class Cliente:
-  def __init__(self, endereco):
-    self.endereco = endereco
-    self.contas = []
-
-  def realizar_transacao(self, conta, transacao ):
-    transacao.registrar(conta)
-
-  def adicionar_conta(self, conta):
-    self.contas.append(conta)
-
-#
-# CLASS: PessoaFisice
-# Estende: Cliente
-#
-# - cpf: str
-# - nome: str
-# - data_nascimento: date
-#
-
-class PessoaFisica (Cliente):
-  def __init__(self, nome, data_nascimento, cpf, endereco):
-    super().__init__(endereco)
-    self.nome = nome
-    self.data_nascimento = data_nascimento
-    self.cpf = cpf
 
 #
 # CLASS: <<interface>>Transacao
@@ -596,10 +598,8 @@ def mostra_extrato(clientes):
 
         # nao ha transacoes para a conta
         if not transacoes:
-            print("\n==================================================")
-            print("Não foram realizadas movimentações nessa conta.")
-            print("==================================================")
-
+            extrato = "Não foram realizadas movimentações nessa conta."
+        
         # ha trasacoes para a conta              
         else:
             print("\n=========================")
@@ -613,76 +613,6 @@ def mostra_extrato(clientes):
         print(f"Saldo atual: R$ {conta.saldo:.2f}")
         print("=========================")
 
-######################                  
-# Função CRIAR_CONTA #
-######################                  
-#
-# Cria uma conta corrente
-#
-# Args:
-#    numero_conta (valor incremental)
-#    clientes
-#    contas                  
-#
-
-def criar_conta(numero_conta, clientes, contas):
-
-    cpf = input("\nInforme o CPF do cliente (somente números): ")
-
-    # cpf inválido
-    if not validar_cpf(cpf):
-        print("\n===================================")
-        print("CPF inválido, favor verificar")
-        print("===================================")
-        return
-
-    else:
-        cpf = limpar_cpf(cpf)          
-
-        cliente = validar_cliente(cpf, clientes)
-
-        # cliente não existe
-        if not cliente:
-            print("\n=========================================================")
-            print(f"Cliente CPF {cpf} não encontrado, criação de conta não realizada")
-            print("=========================================================")
-            return
-
-        # chama o construtor da conta
-        conta = ContaCorrente.nova_conta(cliente = cliente,
-                                         numero = numero_conta)
-        
-        # atualiza a lista de contas          
-        contas.append(conta)
-
-        # atualiza a lista de contas do cliente                            
-        cliente.adicionar_conta(conta)
-                  
-        print("\n=========================")
-        print(f"Conta número {numero_conta} criada com sucesso para o cliente {cpf}")
-        print("=========================")
-
-########################
-# Função LISTAR_CONTAS #
-########################
-#                      
-# Lista as conta correntes existentes
-#
-# Args:
-#    contas (list): lista com as contas existentes
-#
-
-def listar_contas(contas):
-
-    print("\n==================================================")
-    print("Listagem de Contas")
-    print("==================================================\n")
-
-    # repete até listar todas as contas
-    for conta in contas:
-        print("=" * 100)
-        print(textwrap.dedent(str(conta)))
-                  
 ########################                
 # Função CRIAR_cliente #
 ########################                  
@@ -793,8 +723,77 @@ def criar_cliente(clientes):
         print("\n=======================================================")
         print(f"Cliente {cpf} cadastrado com sucesso!")
         print("=======================================================")
+        
+######################                  
+# Função CRIAR_CONTA #
+######################                  
+#
+# Cria uma conta corrente
+#
+# Args:
+#    numero_conta (valor incremental)
+#    clientes
+#    contas                  
+#
+
+def criar_conta(numero_conta, clientes, contas):
+
+    cpf = input("\nInforme o CPF do cliente (somente números): ")
+
+    # cpf inválido
+    if not validar_cpf(cpf):
+        print("\n===================================")
+        print("CPF inválido, favor verificar")
+        print("===================================")
         return
 
+    else:
+        cpf = limpar_cpf(cpf)          
+
+        cliente = validar_cliente(cpf, clientes)
+
+        # cliente não existe
+        if not cliente:
+            print("\n=========================================================")
+            print(f"Cliente CPF {cpf} não encontrado, criação de conta não realizada")
+            print("=========================================================")
+            return
+
+        # chama o construtor da conta
+        conta = ContaCorrente.nova_conta(cliente = cliente,
+                                         numero = numero_conta)
+        
+        # atualiza a lista de contas          
+        contas.append(conta)
+
+        # atualiza a lista de contas do cliente                            
+        cliente.contas.append(conta)
+                  
+        print("\n=========================")
+        print(f"Conta número {numero_conta} criada com sucesso para o cliente {cpf}")
+        print("=========================")
+
+########################
+# Função LISTAR_CONTAS #
+########################
+#                      
+# Lista as conta correntes existentes
+#
+# Args:
+#    contas (list): lista com as contas existentes
+#
+
+def listar_contas(contas):
+
+    print("\n==================================================")
+    print("Listagem de Contas")
+    print("==================================================\n")
+
+    # repete até listar todas as contas
+    for conta in contas:
+        print("=" * 100)
+        print(textwrap.dedent(str(conta)))
+                  
 #==================================
 # PROGRAMA PRINCIPAL
 #==================================
