@@ -35,113 +35,57 @@ Por utilizar maquina e contas corporativas, não possuo mais acesso ao Azure. De
 
 Assim que o banco foi criado e a integração com o PowerBI foi feita, foram seguidos os seguintes passos:
 
-### 1.	Verificação dos cabeçalhos e dos tipos de dados
-### 2.	Atualização dos valores monetários para o tipo double preciso
-### 3.	Verificação da presença de nulos
-### 4.	Remoção das colunas criadas pelo Power BI
-### 5.	Coluna address, da tabela employee, foi dividida, e alguns dados das colunas foram corrigidos e reorganizados
-> Number
-> Street
-> City
-> State
+1.	Verificação dos cabeçalhos e dos tipos de dados
+2.	Atualização dos valores monetários para o tipo double preciso
+3.	Verificação da presença de nulos
+4.	Remoção das colunas criadas pelo Power BI
+5.	Coluna **address**, da tabela **azure_company_employee**, foi dividida, e alguns dados das colunas foram corrigidos e reorganizados:
+   - Number
+   - Street
+   - City
+   - State
  
 **Antes da divisão**
 ![01_antesdiv](images/01_antesdiv.png)
 
 **Depois da divisão**
-![02_depoisdiv](images/02_depois.png)
+![02_depoisdiv](images/02_depoisdiv.png)
 
->5.	Foi realizada a mescla de consultas entre as tabelas employee e departament para criação de uma nova tabela employee com o nome dos departamentos associados aos colaboradores. A mescla teve como base a tabela employee utilizando-se os campos Dno e Dnumber como referência. Após a criação da mescla as colunas Dnumber e todas a outras de departament foram excluídas exceto Dname que foi renomeada para Departament. 
+6.	Foi criada uma tabela mesclada, entre **azure_company_employee** e **azure_company_department**, com o nome dos departamentos relacionados aos funcionários.
+   - Utilizamos as colunas Dno e Dnumber como referência.
 
-**Parâmetros da Mescla de Consultas**
-<p align="center" alt="Parâmetros da Mescla de Consultas">
-<img 
-    src="image/MesclarEmpDept03.png"
-    width="500"  
-/>
-</p>
+7. Após a criação da tabela nova, excluimos todas as colunas relacionadas a departamento, exceto a coluna **Dname**, que renomeamos para **Departament**. 
 
-**Resultado da Mescla de Consultas**
-<p align="center" alt="Resultado da Mescla de Consultas">
-<img 
-    src="image/ResultadoMesclaEmpDept04.png"
-    width="500"  
-/>
-</p>
+**Mescla das tabelas**
+![03_merge](images/03_merge.png)
 
->6.	Foi realizada a junção dos colaboradores e respectivos nomes dos gerentes. A junção foi realizada no Power BI e Utilizou-se a tabela employee para criação da mescla de tabelas. A mesma tabela foi utilizada para obter a junção fazendo a ligação de Super_Ssn com Ssn.
+**Resultado da Mescla**
+![04_mergeresult](images/04_mergeresult.png)
 
-**Parâmetros da Mescla de Consultas**
-<p align="center" alt="Parâmetros da Mescla de Consultas">
-<img 
-    src="image/MesclaNomeGerente05.png"
-    width="500"  
-/>
-</p>
+8. Utilizamos o Power BI para reorganizar a tabela **employee**, deixando junto aos seus nomes o nome do respectivo gerente, utilizando as colunas **Super_Ssn** e **Ssn**
 
-**Resultado da Mescla de Consultas**
-<p align="center" alt="Resultado da Mescla de Consultas">
-<img 
-    src="image/NomeGerentee06.png"
-    width="500"  
-/>
-</p>
+**Nova coluna Manager**
+![05_manager](images/05_manager.png)
 
->7.	As colunas de Nome e Sobrenome foram mescladas para ter apenas uma coluna definindo o nome dos colaboradores. Foi utilizada a opção de mesclar colunas com o sperador espaço selecionado, após a mescla a coluna foi renomeada para Name.
+9. Juntamos as colunas de nome e sobrenome, renomeando como Name.
 
-**Parâmetros da Mescla de Colunas**
-<p align="center" alt="Parâmetros da Mescla de Colunas">
-<img 
-    src="image/MesclaNomeSobrenomeParam07.png"
-    width="400"  
-/>
-</p>
+**Nova coluna Name**
+![06_name](images/06_name.png)
 
-**Resultado da Mescla de Colunas**
-<p align="center" alt="Resultado da Mescla de Colunas">
-<img 
-    src="image/MesclaColunaNomeSobrenomeResult08.png"
-    width="500"  
-/>
-</p>
+10. Foi criada uma tabela mesclada, **dept_namelocation**, mesclando as tabelas **azure_company_department** e **azure_company_dept_locations**
+   - Utilizamos a coluna Dnumber como referência.
+   - Removemos as colunas desnecessárias e duplicadas
 
->8.	Foi criada uma nova mescla de consultas entre as tabelas departament e dept_locations utilizando as colunas Dnumber como parâmetro, a tabela gerada gerada foi renomeada para dept_namelocation, as colunas desnecessárias e duplicadas foram removidas e a mescla de colunas entre as colunas Dname e Dlocation foi realizada.
+**Mescla das tabelas**
+![07_mergedept](images/07_mergedept.png)
 
-**Parâmetros da Mescla de Consultas**
-<p align="center" alt="Parâmetros da Mescla de Consultas">
-<img 
-    src="image/MesclaDept-Dept_locationParam09.png"
-    width="500"  
-/>
-</p>
+**Resultado da Mescla**
+![08_mergedeptresult](images/08_mergedeptresult.png)
 
-**Resultado da Mescla de Consultas**
-<p align="center" alt="Resultado da Mescla de Consultas">
-<img 
-    src="image/MesclaDept-Dept_locationResult10.png"
-    width="500"  
-/>
-</p>
+11. Agrupamos as colunas **employee** e **manager**, para saber quantos funcionários há por gerente.
 
->9.	No passo anterior foi utilizada a opção mesclar consultas e não a opção acrescentar visto que a há uma coluna em comum que combina as duas consultas. 
+**Configuração do Agrupamento**
+![09_agregcol](images/09_agregcol.png)
 
->10.	Foi realizado o agrupamento das colunas Manager e employee a fim de saber quantos colaboradores existem por gerente.  
-
-**Parâmetros do Agrupamento de Colunas**
-<p align="center" alt="Parâmetros do Agrupamento de Colunas">
-<img 
-    src="image/AgregManagerColaboradorParam11.png"
-    width="500"  
-/>
-</p>
-
-**Resultado do Agrupamento de Colunas**
-<p align="center" alt="Resultado do Agrupamento de Colunas">
-<img 
-    src="image/AgregColunaManagerColaboradorResult12.png"
-    width="500"  
-/>
-</p>
-
-
-Relatório desenvolvido por Cibele Gomes Domingos Moraes .
+**Resultado do Agrupamento**
+![10_agregcolresult](images/10_agregcolresult.png)
