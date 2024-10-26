@@ -46,9 +46,11 @@ Assim que o banco foi criado e a integração com o PowerBI foi feita, foram seg
    - State
  
 **Antes da divisão**
+
 ![01_antesdiv](images/01_antesdiv.png)
 
 **Depois da divisão**
+
 ![02_depoisdiv](images/02_depoisdiv.png)
 
 6.	Foi criada uma tabela mesclada, entre **azure_company_employee** e **azure_company_department**, com o nome dos departamentos relacionados aos funcionários.
@@ -57,19 +59,23 @@ Assim que o banco foi criado e a integração com o PowerBI foi feita, foram seg
 7. Após a criação da tabela nova, excluimos todas as colunas relacionadas a departamento, exceto a coluna **Dname**, que renomeamos para **Departament**. 
 
 **Mescla das tabelas**
+
 ![03_merge](images/03_merge.png)
 
 **Resultado da Mescla**
+
 ![04_mergeresult](images/04_mergeresult.png)
 
 8. Utilizamos o Power BI para reorganizar a tabela **employee**, deixando junto aos seus nomes o nome do respectivo gerente, utilizando as colunas **Super_Ssn** e **Ssn**
 
 **Nova coluna Manager**
+
 ![05_manager](images/05_manager.png)
 
 9. Juntamos as colunas de nome e sobrenome, renomeando como Name.
 
 **Nova coluna Name**
+
 ![06_name](images/06_name.png)
 
 10. Foi criada uma tabela mesclada, **dept_namelocation**, mesclando as tabelas **azure_company_department** e **azure_company_dept_locations**
@@ -77,15 +83,19 @@ Assim que o banco foi criado e a integração com o PowerBI foi feita, foram seg
    - Removemos as colunas desnecessárias e duplicadas
 
 **Mescla das tabelas**
+
 ![07_mergedept](images/07_mergedept.png)
 
 **Resultado da Mescla**
+
 ![08_mergedeptresult](images/08_mergedeptresult.png)
 
 11. Agrupamos as colunas **employee** e **manager**, para saber quantos funcionários há por gerente.
 
 **Configuração do Agrupamento**
+
 ![09_agregcol](images/09_agregcol.png)
 
 **Resultado do Agrupamento**
+
 ![10_agregcolresult](images/10_agregcolresult.png)
